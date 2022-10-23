@@ -278,7 +278,7 @@
                 <h4 id="sql注入总结"><a href="#sql注入总结" class="headerlink" title="sql注入总结"></a>sql注入总结</h4><h6 id="一-根据sql数据类型分类"><a href="#一-根据sql数据类型分类" class="headerlink" title="一.根据sql数据类型分类"></a>一.根据sql数据类型分类</h6><p>加单引号,报错可能有注入,不报错没有注入</p>
 <p>1.整形注入(不需要闭合,注释)</p>
 <p>2.字符串类型注入(需要闭合,注释)</p>
-<h6 id=""><a href="#" class="headerlink" title=""></a></h6><h6 id="二-判断sql注入是整形还是字符串"><a href="#二-判断sql注入是整形还是字符串" class="headerlink" title="二.判断sql注入是整形还是字符串"></a>二.<strong>判断</strong>sql注入是整形还是字符串</h6><p>①.<strong>1a和1也可以判断整形和字符串类型如果是字符串就会没什么区别,要是整形会出现1a报错,1正常显示</strong>(如果有init()整形转化函数,就gg)</p>
+<h6 id><a href="#" class="headerlink" title></a></h6><h6 id="二-判断sql注入是整形还是字符串"><a href="#二-判断sql注入是整形还是字符串" class="headerlink" title="二.判断sql注入是整形还是字符串"></a>二.<strong>判断</strong>sql注入是整形还是字符串</h6><p>①.<strong>1a和1也可以判断整形和字符串类型如果是字符串就会没什么区别,要是整形会出现1a报错,1正常显示</strong>(如果有init()整形转化函数,就gg)</p>
 <p>②.and 1&#x3D;1 &#x2F;and1&#x3D;2 回显页面不同(真假判断) (waf拦截) ture or false</p>
 <h6 id="三-引号判断-单引号判断或者双引号-显示数据库错误信息或者页面回显不同"><a href="#三-引号判断-单引号判断或者双引号-显示数据库错误信息或者页面回显不同" class="headerlink" title="三.引号判断(单引号判断或者双引号) 显示数据库错误信息或者页面回显不同"></a><strong>三.引号判断(单引号判断或者双引号) 显示数据库错误信息或者页面回显不同</strong></h6><p>①.(\转义符) 无论整形或者字符串都会报错,只能通过报错信息判断</p>
 <p>②.-1&#x2F;+1通过加减法是否成功(一般用的减法,因为+在一定意义上也代表空格)</p>
@@ -331,7 +331,7 @@
 <p>3.union会从查询结果集中自动去除重复行</p>
 <p>4.只有最后一个select允许有order by</p>
 <p>5.只有最后一个select允许有limit</p>
-<h6 id="-1"><a href="#-1" class="headerlink" title=""></a></h6><h5 id="联合注入"><a href="#联合注入" class="headerlink" title="联合注入"></a>联合注入</h5><p>1.利用前提:页面上有显示位</p>
+<h6 id="-1"><a href="#-1" class="headerlink" title></a></h6><h5 id="联合注入"><a href="#联合注入" class="headerlink" title="联合注入"></a>联合注入</h5><p>1.利用前提:页面上有显示位</p>
 <p>2.优点:方便,快捷,易于利用</p>
 <p>3.缺点:需要显示位</p>
 <p>one:   order by 判断字段数 </p>
@@ -349,7 +349,7 @@
 <p><strong>注意数据库名可以使用十六进制来替代字符串,这样可以绕过单引号得限制</strong> </p>
 <h6 id="查询特定的表的字段"><a href="#查询特定的表的字段" class="headerlink" title="查询特定的表的字段"></a>查询特定的表的字段</h6><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> <span class="hljs-built_in">COLUMN_NAME</span> <span class="hljs-keyword">from</span> information_schema.<span class="hljs-keyword">COLUMNS</span> <span class="hljs-keyword">where</span> TABLE_SCHEMA=<span class="hljs-string">&#x27;test&#x27;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">TABLE_NAME</span>=<span class="hljs-string">&#x27;t10&#x27;</span> <span class="hljs-keyword">limit</span> <span class="hljs-number">0</span>,<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
 
-<h5 id="-2"><a href="#-2" class="headerlink" title=""></a></h5>
+<h5 id="-2"><a href="#-2" class="headerlink" title></a></h5>
                 
               </div>
             
