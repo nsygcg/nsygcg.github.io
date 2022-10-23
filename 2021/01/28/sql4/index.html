@@ -1,0 +1,653 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="qiaqia">
+  <meta name="keywords" content="网络空间安全 web渗透">
+  
+    <meta name="description" content="SQLmap是一种开源的渗透测试工具，可以自动检测和利用SQL注入漏洞以及接入该数据库的服务器。它拥有非常强大的检测引擎、具有多种特性的渗透测试器、通过数据库指纹提取访问底层文件系统并通过外带连接执行命令。 支持的数据库:MySQL，Oracle,PostgreSQL,Microsoft SQL’Server,Microsoft Access,IBM DB2,SQLite,Firebird, Sy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sqlmap的使用">
+<meta property="og:url" content="http://example.com/2021/01/28/sql4/index.html">
+<meta property="og:site_name" content="qiaqia专属记录">
+<meta property="og:description" content="SQLmap是一种开源的渗透测试工具，可以自动检测和利用SQL注入漏洞以及接入该数据库的服务器。它拥有非常强大的检测引擎、具有多种特性的渗透测试器、通过数据库指纹提取访问底层文件系统并通过外带连接执行命令。 支持的数据库:MySQL，Oracle,PostgreSQL,Microsoft SQL’Server,Microsoft Access,IBM DB2,SQLite,Firebird, Sy">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/1.webp">
+<meta property="article:published_time" content="2021-01-28T06:35:59.000Z">
+<meta property="article:modified_time" content="2022-10-23T09:53:02.139Z">
+<meta property="article:author" content="qiaqia">
+<meta property="article:tag" content="sqlmap的使用">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/1.webp">
+  
+  
+  
+  <title>sqlmap的使用 ~ qiaqia专属记录</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>qiaqia</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="sqlmap的使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-01-28 14:35" pubdate>
+          2021年1月28日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          31 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">sqlmap的使用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>SQLmap是一种开源的渗透测试工具，可以自动检测和利用SQL注入漏洞以及接入该数据库的服务器。它拥有非常强大的检测引擎、具有多种特性的渗透测试器、通过数据库指纹提取访问底层文件系统并通过外带连接执行命令。</p>
+<p>支持的数据库:MySQL，Oracle,PostgreSQL,Microsoft SQL’Server,Microsoft Access,IBM DB2,SQLite,Firebird, Sybase andSAP MAXDB。</p>
+<p>sQLmap支持五种不同的注入模式:<br>◆UNION query sQL injection(可联合查询注入)</p>
+<p>◆Error-based sQL injection(报错型注入)<br>◆Boolean-based blind sQL injection(布尔型注入)</p>
+<p>◆Time-based blind sQL injection(基于时间延迟注入）</p>
+<p>◆Stacked queries sQL injection (可多语句查询注入)</p>
+<p>二、设置目标URL</p>
+<p>-u&#x2F;–url<br>最基本格式sqlmap -u”<a target="_blank" rel="noopener" href="http://www.target.com/index.php?id=1%E2%80%9D">http://www.target.com/index.php?id=1”</a></p>
+<p>-m<br>从文本中获取多个目标扫描,但是每一行只能有一个ur1.sqlmap-ur1list.txt</p>
+<p>-r<br>从文件中加载HTTP请求，这样的话就不需要在去设定cookie, POST数据……等等。</p>
+<p>三、设置回显等级<br>参数: -v默认为1:<br>0、只显示python错误以及严重的信息。<br>1、同时显示基本信息和警告信息。（默认等级&gt;</p>
+<p>2、同时显示debug信息。<br>3、同时显示注入的payload。</p>
+<p>4、同时显示HTTP请求。</p>
+<p>5、同时显示HTTP响应头。</p>
+<p>6、同时显示HTTP响应页面。</p>
+<p>四、设置HTTP数据包相关参数<br>参数: –data<br>此参数是把data后面的数据以POST方式提交，sqlmap会像检测GET参数一样检测POST提交过去的参数。<br>python sqlmap.py -u “<a target="_blank" rel="noopener" href="http://www.target.com/vuln.php&quot;">http://www.target.com/vuln.php&quot;</a> –data&#x3D;”id&#x3D;1”<br>参数: –cookie<br>当web需要登录的时候，需要我们抓包获取cookie参数，然后复制出来，加到–cookie参数中。<br>–cookie&#x3D;” Cookie: Hm_lvt6910067,1546929561,1547001094,1547024662;PHPSESSID&#x3D;o64fbvo316lg59njufl2gfutm4; “</p>
+<p>四、设置HTTP数据包相关参数<br>HTTP User-Agent头参数:–user-agent<br>默认情况下sqlmap的HTTP请求头中的User-Agent值是: sqlmap&#x2F;1.O-dev-xxxxxxxxx(<a target="_blank" rel="noopener" href="http://sqlmap.org/">http://sqlmap.org</a>)<br>这个时候可以手动指定伪造一个User-Agent。<br>sqlmap -u “<a target="_blank" rel="noopener" href="http://www.target.com”--level/">http://www.target.com”--level</a> 3 –user-agent&#x3D;” aaaaaa” –dbs<br>参数: –random-agent会从&#x2F;usr&#x2F;share&#x2F;sqlmap&#x2F;data&#x2F;txt&#x2F;user-agents.txt中随机产生User-Agent头。<br>sqlmap -u “<a target="_blank" rel="noopener" href="http://www.target.com”/">http://www.target.com”</a> –level 3 –random-agent –dbs<br>sqlmap检查uesr-agent中的注入点, level&gt;&#x3D;3才会去检查user-agent头是否存在注入漏洞</p>
+<p>四、设置HTTP数据包相关参数<br>HTTP Referer头<br>参数: –referer<br>sqlmap可以在请求中伪造HTTP中的referer。sqlmap -u “<a target="_blank" rel="noopener" href="http://www.target.com/?id=1%E2%80%9Dreferer=&quot;">http://www.target.com/?id=1”referer=&quot;</a> <a target="_blank" rel="noopener" href="http://www.baidu.com&quot;/">http://www.baidu.com&quot;</a><br>当–level参数设定&gt;&#x3D;3时，会尝试进行referer注入。</p>
+<p>四、设置HTTP数据包相关参数<br>–delay<br>可以设定两个http请求间的延迟，设定为1的时候是1秒，默认是没有延迟的。<br>–timeout<br>可以设定一个http请求超过多少秒判定为超时，默认是30秒。</p>
+<p>五、指定测试参数<br>-p ,<br>sqlmap默认会测试所有的GET和POST参数，当–level的值大于等于2的时候也会测试HTTP Cookie头的值，当大于等于3的时候也会测试User- Agent和HTTP Referer头的值。<br>例如: -p“id,user-angent”<br>–skip<br>在使用–level时，级别很大的时候，但是有些参数不能去测试，那么可以使用–skip参数跳过。<br>例如: –skip&#x3D;” user-agent,referer”</p>
+<p>六、设定探测等级<br>–level (sqlmap -r情况下)<br>共有五个等级，默认为1，sqlmap使用的payload可以在<br>xml&#x2F;payloads.xml中看到，自己也可以根据相应的格式添加自己的payload。<br>level&gt;&#x3D;2的时候就会测试HTTP Cookie。<br>level&gt;&#x3D;3的时候就会测试HTTP User-Agent&#x2F;Referer头。level&#x3D;5的时候会测试HTTP Host。</p>
+<p>七、设定探测风险等级<br>–risk<br>共有三个风险等级，1-3，<br>默认是1会测试大部分的测试语句，2会增加基于时间的测试语句，3会增加OR语句的SQL注入测试。<br>在有些时候，例如在UPDATE，DELETE的语句中，注入一个OR的测试语句，可能导致更新的整个表，可能造成很大的风险。</p>
+<p>八、列数据</p>
+<p>–dbs<br>列出所有的数据库<br>列出当前登录的用户名<br>–users,<br>–passwords,<br>列出当前登录的用户密码<br>–is-dba<br>判断是否root权限<br>–technique :指定使用哪种注入类型<br>B:基于Boolean的盲注（Boolean based blind&gt;Q:内联查询(inlin queries)<br>T:基于时间的盲注（time based blind&gt;U:联合查询(union query based)E:错误（error based）<br>S:栈查询(stack queries)<br>速度排序&#x3D;联合&gt;报错&gt;布尔&gt;延迟</p>
+<p>八、列数据<br>–current-db当前数据库–privileges权限<br>-Ddatabase_name –tables<br>-Ddatabase_name -T table_name –columns<br>-D database_name -T table_name -C column_1,column_2 –dump</p>
+<p>九、一些常用的参数<br>–users列数据库管理用户,当前用户有权限读取包含所有用户的表的权限时，就可以列出所有管理用户。<br>–current-user在大多数据库中可以获取到管理数据的用户。–is-dba 判断当前的用户是否为管理，是的话会返回True。<br>–privileges当前用户有权限读取包含所有用户的表的权限时，很可能列举出每个用户的权限，sqlmap将会告诉你哪个是数据库的超级管理员。也可以用-U参数指定你想看那个用户的权限。</p>
+<p>九、一些常用的参数<br>–proxy指定一个代理服务器eg:-proxy <a href="http://local:8080select">http://local:8080select</a> * from users where id&#x3D;l(1’)))<br>–prefix&#x3D;PREFIX注入payload字符串前缀-suffix&#x3D;SUFFIX注入payload字符串后缀<br>eg: sqlmap -u “<a target="_blank" rel="noopener" href="http://www.target.com/index.php?id=1%E2%80%9D">www.target.com/index.php?id=1”</a> -p id –prefix “”))))”–suffix“AND (‘1’&#x3D;’1”</p>
+<p>九、一些常用的参数<br>移动文件:<br>sqlmap -u “<a target="_blank" rel="noopener" href="http://www.a.com/1.php?id=1%E2%80%9D--file-write=&quot;">www.a.com/1.php?id=1”--file-write=&quot;</a> d:&#x2F;2.txt”–file-dest&#x3D;”E:&#x2F;wwwroot&#x2F;bihuoedu&#x2F;one.php “<br>–batch 全自动<br>–start&#x3D;开始条数–stop&#x3D;结束条数–dump 导出当前数据库所有数据–dump-all 导出数据库所有数据–purge清空缓存目录<br>–sql-shell反弹sqlshell,类似于sql查询分析器默认路径.sqlmap(点sqlmap)</p>
+<p>十、使用shell命令:<br>参数–os-shell(分析一下）<br>前提:需要网站的物理路径，其次是需要有FIILE权限。<br>sqlmap -r“C: \sqlmap\request.txt” -p id –dms mysql –os-shell接下来指定网站可写目录:<br>“C: \www”<br>d : \phpstudy \www(成功)</p>
+<p>十一.sqlmap常用脚本</p>
+<p><img src="C:\Users\win10\AppData\Roaming\Typora\typora-user-images\image-20221023175151217.png" srcset="/img/loading.gif" lazyload alt="image-20221023175151217"></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/sqlmap%E7%9A%84%E4%BD%BF%E7%94%A8/">#sqlmap的使用</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>sqlmap的使用</div>
+      <div>http://example.com/2021/01/28/sql4/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>qiaqia</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年1月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/01/27/sql3/" title="sql写马">
+                        <span class="hidden-mobile">sql写马</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <div style="font-size: 0.85rem"> <span id="timeDate">载入天数...</span> <span id="times">载入时分秒...</span> <script src="/js/date.js"></script> </div> 
+    </div>
+  
+  
+  
+  
+
+
+	  </div>
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

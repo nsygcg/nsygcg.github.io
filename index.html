@@ -224,23 +224,270 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2021/01/23/qiaqiatest/" target="_self">
-          <img src="/img/avatar.png" srcset="/img/loading.gif" lazyload alt="qiaqiatest">
+        <a href="/2021/01/28/sql4/" target="_self">
+          <img src="/img/1.webp" srcset="/img/loading.gif" lazyload alt="sqlmap的使用">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/01/23/qiaqiatest/" target="_self">
-          qiaqiatest
+        <a href="/2021/01/28/sql4/" target="_self">
+          sqlmap的使用
         </a>
       </h1>
 
       
-      <a class="index-excerpt " href="/2021/01/23/qiaqiatest/" target="_self">
+      <a class="index-excerpt " href="/2021/01/28/sql4/" target="_self">
         <div>
-          这是qiaqia专属记录空间
+          SQLmap是一种开源的渗透测试工具，可以自动检测和利用SQL注入漏洞以及接入该数据库的服务器。它拥有非常强大的检测引擎、具有多种特性的渗透测试器、通过数据库指纹提取访问底层文件系统并通过外带连接执行命令。 支持的数据库:MySQL，Oracle,PostgreSQL,Microsoft SQL’Server,Microsoft Access,IBM DB2,SQLite,Firebird, Sy
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-01-28 14:35" pubdate>
+              2021-01-28
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/sqlmap%E7%9A%84%E4%BD%BF%E7%94%A8/">#sqlmap的使用</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/01/27/sql3/" target="_self">
+          <img src="/img/1.webp" srcset="/img/loading.gif" lazyload alt="sql写马">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/01/27/sql3/" target="_self">
+          sql写马
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt " href="/2021/01/27/sql3/" target="_self">
+        <div>
+          今天实战的时候遇到写木马被限制了,一时想不起来还有啥方法,于是特出此篇记录….顺便复习一下防御手段 一.数据库慢日志写木马security_file_priv会阻拦我们使用outfile写入文件,没有服务器权限无法修改my.ini配置文件,可以利用慢查询日志写入shell 有时候全局日志会写死 使用慢查询日志,只有超时(系统时间)才会被写入日志 123456show variables like
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-01-27 17:27" pubdate>
+              2021-01-27
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/sql%E5%86%99%E9%A9%AC/" class="category-chain-item">sql写马</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/sql%E5%86%99%E9%A9%AC/">#sql写马</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/01/25/sql2/" target="_self">
+          <img src="/img/1.webp" srcset="/img/loading.gif" lazyload alt="sql注入备忘录">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/01/25/sql2/" target="_self">
+          sql注入备忘录
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt " href="/2021/01/25/sql2/" target="_self">
+        <div>
+          SQL注入备忘表一 . 联合注入列出所有数据库 :  123456limit 一个一个打印出来库名		select SCHEMA_NAME from information_schema.SCHEMATA limit 0,1group_concat 一次性全部显示		select group_concat(SCHEMA_NAME) from information_schema.SCHEMATA
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-01-25 15:22" pubdate>
+              2021-01-25
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/sql%E6%B3%A8%E5%85%A5%E5%A4%87%E5%BF%98%E5%BD%95/" class="category-chain-item">sql注入备忘录</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/sql%E6%B3%A8%E5%85%A5%E5%A4%87%E5%BF%98%E5%BD%95/">#sql注入备忘录</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/01/24/sql1/" target="_self">
+          <img src="/img/1.webp" srcset="/img/loading.gif" lazyload alt="sql总结">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/01/24/sql1/" target="_self">
+          sql总结
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt " href="/2021/01/24/sql1/" target="_self">
+        <div>
+          sql注入总结一.根据sql数据类型分类加单引号,报错可能有注入,不报错没有注入 1.整形注入(不需要闭合,注释) 2.字符串类型注入(需要闭合,注释) 二.判断sql注入是整形还是字符串①.1a和1也可以判断整形和字符串类型如果是字符串就会没什么区别,要是整形会出现1a报错,1正常显示(如果有init()整形转化函数,就gg) ②.and 1&#x3D;1 &#x2F;and1&#x3D;2 回
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-01-24 11:13" pubdate>
+              2021-01-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/sql%E6%80%BB%E7%BB%93/" class="category-chain-item">sql总结</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/sql%E6%80%BB%E7%BB%93/">#sql总结</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/01/23/sql/" target="_self">
+          <img src="/img/1.webp" srcset="/img/loading.gif" lazyload alt="sql各种注入手法">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/01/23/sql/" target="_self">
+          sql各种注入手法
+        </a>
+      </h1>
+
+      
+      <a class="index-excerpt " href="/2021/01/23/sql/" target="_self">
+        <div>
+          一.报错注入利用前提:页面上没有显示位无所谓,但是需要输出sql语句执行错误信息,比如mysqli_error() 优点:不需要显示位 缺点:需要输出mysqli_error()报错信息 报错函数1.Floor() 对于这个报错来说,先group by 之后再select group by 执行一次rand ,如果有,直接count(*),如果没有,先插入(相当于执行力两次rand) floor函
         </div>
       </a>
 
@@ -254,11 +501,32 @@
           </div>
         
         
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/sql%E6%B3%A8%E5%85%A5/" class="category-chain-item">sql注入</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
         
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/test/">#test</a>
+              <a href="/tags/sql%E6%B3%A8%E5%85%A5/">#sql注入</a>
             
           </div>
         
