@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/1.webp">
 <meta property="article:published_time" content="2021-01-28T06:35:59.000Z">
-<meta property="article:modified_time" content="2022-10-23T09:53:02.139Z">
+<meta property="article:modified_time" content="2022-10-23T10:06:47.860Z">
 <meta property="article:author" content="qiaqia">
 <meta property="article:tag" content="sqlmap的使用">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.6k 字
+          4k 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          31 分钟
+          34 分钟
         
       </span>
     
@@ -305,7 +305,7 @@
 <p>九、一些常用的参数<br>移动文件:<br>sqlmap -u “<a target="_blank" rel="noopener" href="http://www.a.com/1.php?id=1%E2%80%9D--file-write=&quot;">www.a.com/1.php?id=1”--file-write=&quot;</a> d:&#x2F;2.txt”–file-dest&#x3D;”E:&#x2F;wwwroot&#x2F;bihuoedu&#x2F;one.php “<br>–batch 全自动<br>–start&#x3D;开始条数–stop&#x3D;结束条数–dump 导出当前数据库所有数据–dump-all 导出数据库所有数据–purge清空缓存目录<br>–sql-shell反弹sqlshell,类似于sql查询分析器默认路径.sqlmap(点sqlmap)</p>
 <p>十、使用shell命令:<br>参数–os-shell(分析一下）<br>前提:需要网站的物理路径，其次是需要有FIILE权限。<br>sqlmap -r“C: \sqlmap\request.txt” -p id –dms mysql –os-shell接下来指定网站可写目录:<br>“C: \www”<br>d : \phpstudy \www(成功)</p>
 <p>十一.sqlmap常用脚本</p>
-<p><img src="C:\Users\win10\AppData\Roaming\Typora\typora-user-images\image-20221023175151217.png" srcset="/img/loading.gif" lazyload alt="image-20221023175151217"></p>
+<p>序号 	脚本名称	注释<br>1	Ox2char	将每个编码后的字符转换为等价表达<br>2	apostrophemask	单引号替换为Utf8字符<br>3	apostrophenullencode	替换双引号为%00%27<br>4	appendnullbyte	有效代码后添加%00<br>5	base64encode	使用base64编码<br>6	between	比较符替换为between<br>7	bluecoat	空格替换为随机空白字符，等号替换为like<br>8	chardoubleencode	双url编码<br>9	charencode	将url编码<br>10	charunicodeencode 使用unicode编码<br>11	charunicodeescape	以指定的payload反向编码未编码的字符<br>12	commalesslimit	改变limit语句的写法<br>13	commalessmid	改变mid语句的写法<br>14	commentbeforeparentheses	在括号前加内联注释<br>15	concat2concatws	替换CONCAT为CONCAT_wS</p>
 
                 
               </div>
