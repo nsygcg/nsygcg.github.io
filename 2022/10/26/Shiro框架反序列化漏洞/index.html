@@ -1,0 +1,722 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="qiaqia">
+  <meta name="keywords" content="网络空间安全 web渗透">
+  
+    <meta name="description" content="shiro简介 Apache Shiro 是企业常见的JAVA安全框架,执行身份验证,授权,密码和会话管理.只要rememberMe的AES加密密钥泄露,无论shrio是什么版本都会导致反序列化漏洞 Shiro框架 Apache Shrio 是一个强大且易用的java安全框架,能够用于身份验证,授权,加密和会话管理.shrio拥有易于理解的API,用户可以快速,轻松地获得任何应用程序-从最小的移动">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shiro框架反序列化漏洞">
+<meta property="og:url" content="https://www.dongw.cf/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/index.html">
+<meta property="og:site_name" content="qiaqia专属记录">
+<meta property="og:description" content="shiro简介 Apache Shiro 是企业常见的JAVA安全框架,执行身份验证,授权,密码和会话管理.只要rememberMe的AES加密密钥泄露,无论shrio是什么版本都会导致反序列化漏洞 Shiro框架 Apache Shrio 是一个强大且易用的java安全框架,能够用于身份验证,授权,加密和会话管理.shrio拥有易于理解的API,用户可以快速,轻松地获得任何应用程序-从最小的移动">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.dongw.cf/img/f.jpg">
+<meta property="article:published_time" content="2022-10-26T15:01:53.000Z">
+<meta property="article:modified_time" content="2022-10-26T15:18:57.652Z">
+<meta property="article:author" content="qiaqia">
+<meta property="article:tag" content="网络空间安全 web渗透">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.dongw.cf/img/f.jpg">
+  
+  
+  
+  <title>Shiro框架反序列化漏洞 ~ qiaqia专属记录</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"www.dongw.cf","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":"ture","follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>qiaqia</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Shiro框架反序列化漏洞"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-10-26 23:01" pubdate>
+          2022年10月26日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          20 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Shiro框架反序列化漏洞</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>shiro简介</p>
+<p>Apache Shiro 是企业常见的JAVA安全框架,执行身份验证,授权,密码和会话管理.只要rememberMe的AES加密密钥泄露,无论shrio是什么版本都会导致反序列化漏洞</p>
+<p>Shiro框架</p>
+<p>Apache Shrio 是一个强大且易用的java安全框架,能够用于身份验证,授权,加密和会话管理.shrio拥有易于理解的API,用户可以快速,轻松地获得任何应用程序-从最小的移动应用程序到最大的网络和企业应用程序</p>
+<p>简而言之,APache Shrio是一个强大灵活的开源安全框架,可以完全处理身份验证,授权,加密,和会话管理.</p>
+<p>验证用户身份</p>
+<p>用户访问权限控制,比如1.判断用户是否分配了一定的安全角色2.判断用户是否被授予完成某个操作的权限</p>
+<p>在非Web或EJB容器的环境下可以任意使用Session API</p>
+<p>可以响应认证,访问控制,或者session生命周期中发生的事件</p>
+<p>可将一个或以上用户的安全数据组合成一个复合的用户”view”(视图 MVC思想)</p>
+<p>支持单点登录(SSO)功能</p>
+<p>支持提供”Remember Me” 服务,获取用户关联信息而无需登录</p>
+<p>只要Remember Me的AES加密密钥泄露,无论是shrio是什么版本都会导致反序列化漏洞</p>
+<h6 id="Shrio漏洞原理"><a href="#Shrio漏洞原理" class="headerlink" title="Shrio漏洞原理"></a>Shrio漏洞原理</h6><p>Apache Shrio 框架提供了记住我的功能(RememberMe),用户登录成功后会生成经过加密并编码的cookie.cookie的key为remeberme,cookie的值是经过对相关信息进行序列化,然后使用aes加密,最后使base64编码处理形成的,然后存入服务器端</p>
+<p>在服务端接受cookie值时,按以下步骤解析:</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs clean">检索RememberMe cookie的值<br><br>base64解码<br><br>使用ACE解密(加密密钥硬编码)<br><br>进行反序列化操作(未作过滤处理)<br><br>###### <br></code></pre></td></tr></table></figure>
+
+<p>在调用反序列化的时候未进行任何过滤,导致可以触发远程代码执行漏洞</p>
+<p>用户登录成功之后会生成经过加密并编码的cookie,在服务端接受cookie之后,base64解码–&gt;AES解密–&gt;反序列化.攻击者只要找到AES加密的密钥,就可以构造一个恶意的对象,对其进行序列化–&gt;AES加密–&gt;base64编码,然后将其作为cookie的rememberMe字段发送.Shrio将rememberMe进行解密并且反序列化,最终造成反序列化漏洞</p>
+<h6 id="Shrio序列化利用条件"><a href="#Shrio序列化利用条件" class="headerlink" title="Shrio序列化利用条件"></a>Shrio序列化利用条件</h6><p>由于使用了AES加密,要想成功利用漏洞则需要获取AES的加密密钥,而在shrio1.2.4之前的版本中使用的是硬编码,AES加密的密钥默认在代码里面.其默认密钥的base64编码后的值为KPH+blxk5D2deZxcaaaA&#x3D;&#x3D;,这里就可以通过构造恶意的序列化对象进行编码加密然后作为cookie加密发送,服务端接受后会解密并触发反序列化漏洞.</p>
+<p>目前已经更新了很多版本,但是官方并没有把反序列化漏洞本身解决,而是通过去掉硬编码的密钥,使其每次生成一个密钥来解决该漏洞.但是,目前一些开源系统,教程范例代码都使用固定的编码,也有很多开源项目内部集成了shrio并二次开发,可能会重现低版本shrio的默认固定密钥的风险.例如Guns开源框架内部集成了shrio并二次开发,作者自定义密钥并固定,此时用户如果不对密钥进行修改,即使升级shrio版本,也依旧存在固定密钥的风险.这里可以通过搜索引擎和github来收集密钥,提高漏洞检测和利用的成功率</p>
+<p>如果反序列化对象中存在魔法函数,使用unserialize()函数同时也会触发.这样,一旦我们能够控unserialize()入口,那么就可能引发对象注入漏洞.</p>
+<p>shrio漏洞指纹</p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig">在请求包中的<span class="hljs-string">cookie</span>为?<span class="hljs-string">remeberMe</span>字段赋任意值<br><br>返回包中存在<span class="hljs-built_in">set-cookie:remeberMe=deleteMe</span><br><br><span class="hljs-string">URL</span>中有<span class="hljs-string">shrio</span>字样<br><br>有时候服务器不会主动返回<span class="hljs-string">remeberMe</span>=<span class="hljs-string">deleteMe</span>,直接发包即可<br></code></pre></td></tr></table></figure>
+
+<p>复现</p>
+<p><img src="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/image-20221026230452767.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/image-20221026230531320.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/image-20221026230553127.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/image-20221026230617306.png" srcset="/img/loading.gif" lazyload></p>
+<p>利用工具地址:<a target="_blank" rel="noopener" href="https://github.com/j1anFen/shiro_attack/releases">https://github.com/j1anFen/shiro_attack/releases</a></p>
+<p>PHP类中有一种特殊函数体的存在叫魔法函数，magic函数命名是以符号__开头的，比如 __construct, __destruct, __toString, __sleep, __wakeup等等。这些函数在某些情况下会自动调用，比如__construct当一个对象创建时被调用，__destruct当一个对象销毁时被调用，__toString当一个对象被当作一个字符串使用。</p>
+<p>而在反序列化时，如果反序列化对象中存在魔法函数，使用unserialize()函数同时也会触发。这样，一旦我们能够控制unserialize()入口，那么就可能引发对象注入漏洞。</p>
+<p> 自我解释:对于这个反序列化漏洞来说,触发了像构造函数这类型的方法,会通过echo’’; fileinput等等操作进行恶意代码的执行-一句话木马,到xsspayload.因为php代码可以嵌套js.</p>
+<p>使用工具过程</p>
+<p><img src="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/image-20221026230720228.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/image-20221026230740097.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/image-20221026230800300.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/image-20221026230820042.png" srcset="/img/loading.gif" lazyload></p>
+<p>这里一直不成功的原因是因为没有进行序列化在进行aes加密,base64编码</p>
+<p>这里还需要一个序列化工具<a target="_blank" rel="noopener" href="https://github.com/angelwhu/ysoserial">https://github.com/angelwhu/ysoserial</a></p>
+<p>第一步：首先我们需要将一个地址加一个端口进行加密，这个地址是运行反弹命令的主机ip，也就是我们第二步主机ip。加密的步骤就是我们上面说的 命令-序列化——AES加密——base64加密。当然代码都可以帮你处理好了。你的加密代码poc.py,需要和打包好的序列化工具ysoserial放在一起才能进行加密。</p>
+<p><img src="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/image-20221026230858045.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/image-20221026230924222.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/image-20221026230943188.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/image-20221026231007436.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/image-20221026231027288.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/image-20221026231050750.png" srcset="/img/loading.gif" lazyload></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%BC%8F%E6%B4%9E%E6%94%B6%E9%9B%86/" class="category-chain-item">漏洞收集</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Shiro框架反序列化漏洞</div>
+      <div>https://www.dongw.cf/2022/10/26/Shiro框架反序列化漏洞/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>qiaqia</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年10月26日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-nc"></i>
+                  </span>
+                </a>
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/01/30/weblogic%E4%B9%8Bssrf%E8%B2%A0%E7%8F%BE/" title="weblogic之ssrf負現">
+                        <span class="hidden-mobile">weblogic之ssrf負現</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <div style="font-size: 0.85rem"> <span id="timeDate">载入天数...</span> <span id="times">载入时分秒...</span> <script src="/js/date.js"></script> </div> 
+    </div>
+  
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      粤ICP备2021013948号
+    </a>
+  </span>
+  
+</div>
+
+  
+  
+
+
+	  </div>
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

