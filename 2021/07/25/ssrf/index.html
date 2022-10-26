@@ -19,23 +19,17 @@
     <meta name="description" content="ssrf(服务器请求伪造)一般现在的公司部署网站时,不会显示真实的网站ip,而是具有边界cdn或者边界内容分发点.ssrf可以通过这个边界内容分发点进行内网资源的探测(远比nmap好使,nmap一扫描,如果是边界点的话不是全部开发就是全部关闭之类的) 或者是一个web服务器可以访问其他内网的资源. ssrf:服务器请求伪造是一种攻击者构造形成由服务器发起请求的一个安全漏洞.一般情况下,我们是访问不">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ssrf">
-<meta property="og:url" content="https://www.dongw.cf/2022/10/26/ssrf/index.html">
+<meta property="og:url" content="https://www.dongw.cf/2021/07/25/ssrf/index.html">
 <meta property="og:site_name" content="qiaqia专属记录">
 <meta property="og:description" content="ssrf(服务器请求伪造)一般现在的公司部署网站时,不会显示真实的网站ip,而是具有边界cdn或者边界内容分发点.ssrf可以通过这个边界内容分发点进行内网资源的探测(远比nmap好使,nmap一扫描,如果是边界点的话不是全部开发就是全部关闭之类的) 或者是一个web服务器可以访问其他内网的资源. ssrf:服务器请求伪造是一种攻击者构造形成由服务器发起请求的一个安全漏洞.一般情况下,我们是访问不">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf/image-20221026211834785.png">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf/image-20221026212121412.png">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf/image-20221026212233477.png">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf/image-20221026212301700.png">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf/image-20221026212346252.png">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf/image-20221026212427479.png">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf/image-20221026212533866.png">
-<meta property="article:published_time" content="2022-10-26T13:12:32.000Z">
-<meta property="article:modified_time" content="2022-10-26T13:28:29.849Z">
+<meta property="og:image" content="https://www.dongw.cf/img/a.jpg">
+<meta property="article:published_time" content="2021-07-25T03:12:32.000Z">
+<meta property="article:modified_time" content="2022-10-26T14:06:02.645Z">
 <meta property="article:author" content="qiaqia">
 <meta property="article:tag" content="ssrf">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://www.dongw.cf/2022/10/26/ssrf/image-20221026211834785.png">
+<meta name="twitter:image" content="https://www.dongw.cf/img/a.jpg">
   
   
   
@@ -230,8 +224,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-10-26 21:12" pubdate>
-          2022年10月26日 晚上
+        <time datetime="2021-07-25 11:12" pubdate>
+          2021年7月25日 上午
         </time>
       </span>
     
@@ -301,7 +295,7 @@
 <p>ssrf:服务器请求伪造是一种攻击者构造形成由服务器发起请求的一个安全漏洞.一般情况下,我们是访问不到内部系统,但是ssrf攻击的目标从外网访问原来无法访问的内网</p>
 <p>为什么会产生ssrf?<br>很多Web应用都提供了从其他服务器上获取数据的功能。使用用<br>户指定的URL，Web应用可以获取图片，下载文件，读取文件内容等。<br>这个功能如果被恶意使用，可以利用存在缺陷的web应用作为代理攻击<br>远程和本地服务器。<br>服务端提供了从其他服务器应用获取数据的功能且没有对目标地<br>址做过滤与限制.</p>
 <p>大部分的web服务器架构中，web服务器自身都可以访问互联网和服务器所在的内网。</p>
-<p><img src="/2022/10/26/ssrf/image-20221026211834785.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2021/07/25/ssrf/image-20221026211834785.png" srcset="/img/loading.gif" lazyload></p>
 <p>SSRF能做的事情</p>
 <p>1.可以对外网服务器所在的内网、本地进行端口扫描，获取-些服务的banner信息a<br>2.攻击运行在内网或者本地的应用程序。<br>3.对内网web应用进行指纹识别，通过访问默认文件实现。<br>4.攻击内外网的web应用。sql注入、struct2、redis等。利用file协议读取本地文件等。</p>
 <p>造成ssrf的常用函数</p>
@@ -309,16 +303,16 @@
 
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">if</span> (<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;url&#x27;</span>])) &#123; <br><span class="hljs-variable">$content</span> = <span class="hljs-title function_ invoke__">file_get_contents</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;url&#x27;</span>]); <br><span class="hljs-variable">$filename</span> =<span class="hljs-string">&#x27;img1.jpg’;</span><br><span class="hljs-string"> file_put_contents($filename, $content); </span><br><span class="hljs-string">echo $_POST[&#x27;</span>url’]; <br><span class="hljs-variable">$img</span> = <span class="hljs-string">&quot;&lt; img src=\&quot;&quot;</span>.<span class="hljs-variable">$filename</span>.<span class="hljs-string">&quot;\&quot;/&gt;&quot;</span>; <br>&#125; <br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$img</span>; <br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
 
-<p><img src="/2022/10/26/ssrf/image-20221026212121412.png" srcset="/img/loading.gif" lazyload></p>
-<p><img src="/2022/10/26/ssrf/image-20221026212233477.png" srcset="/img/loading.gif" lazyload></p>
-<p><img src="/2022/10/26/ssrf/image-20221026212301700.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2021/07/25/ssrf/image-20221026212121412.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2021/07/25/ssrf/image-20221026212233477.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2021/07/25/ssrf/image-20221026212301700.png" srcset="/img/loading.gif" lazyload></p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GetFile</span>(<span class="hljs-params"><span class="hljs-variable">$host</span>, <span class="hljs-variable">$port</span>, <span class="hljs-variable">$link</span></span>)</span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">//fsockopen() 将返回一个文件句柄，之后可以被其他文件类函数调用</span><br>    <span class="hljs-comment">//（例如： fgets() ， fgetss() ，</span><br>    <span class="hljs-comment">// fwrite() ， fclose() 还有 feof() ）。如果调用失败，将返回 FALSE 。</span><br>    <span class="hljs-variable">$fp</span> = <span class="hljs-title function_ invoke__">fsockopen</span>(<span class="hljs-variable">$host</span>, <span class="hljs-title function_ invoke__">intval</span>(<span class="hljs-variable">$port</span>), <span class="hljs-variable">$errno</span>, <span class="hljs-variable">$errstr</span>, <span class="hljs-number">30</span>); <span class="hljs-comment">//这个函数相当于`我们之前python写的nmap扫描器的socket,为了连接资源</span><br>    <span class="hljs-keyword">if</span> (!<span class="hljs-variable">$fp</span>) &#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;<span class="hljs-subst">$errstr</span> (error number <span class="hljs-subst">$errno</span>) \n&quot;</span>;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-variable">$out</span> = <span class="hljs-string">&quot;GET <span class="hljs-subst">$link</span> HTTP/1.1\r\n&quot;</span>;<br>        <span class="hljs-variable">$out</span> .= <span class="hljs-string">&quot;Host: <span class="hljs-subst">$host</span>\r\n&quot;</span>;<br>        <span class="hljs-variable">$out</span> .= <span class="hljs-string">&quot;Connection: Close\r\n\r\n&quot;</span>;<br>        <span class="hljs-variable">$out</span> .= <span class="hljs-string">&quot;\r\n&quot;</span>;<br>        <span class="hljs-title function_ invoke__">fwrite</span>(<span class="hljs-variable">$fp</span>, <span class="hljs-variable">$out</span>);<br>        <span class="hljs-variable">$contents</span> = <span class="hljs-string">&#x27;&#x27;</span>;<br>        <span class="hljs-keyword">while</span> (! <span class="hljs-title function_ invoke__">feof</span>(<span class="hljs-variable">$fp</span>)) &#123;<br>        <span class="hljs-comment">//feof以字符串显示资源</span><br>            <span class="hljs-variable">$contents</span> .= <span class="hljs-title function_ invoke__">fgets</span>(<span class="hljs-variable">$fp</span>, <span class="hljs-number">1024</span>);<br>        &#125;<br>        <span class="hljs-title function_ invoke__">fclose</span>(<span class="hljs-variable">$fp</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable">$contents</span>;<br>    &#125;<br>&#125;<br><span class="hljs-variable">$host</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;host&#x27;</span>];<br><span class="hljs-variable">$port</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;port&#x27;</span>];<br><span class="hljs-variable">$link</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;link&#x27;</span>];<br></code></pre></td></tr></table></figure>
 
-<p><img src="/2022/10/26/ssrf/image-20221026212346252.png" srcset="/img/loading.gif" lazyload></p>
-<p><img src="/2022/10/26/ssrf/image-20221026212427479.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2021/07/25/ssrf/image-20221026212346252.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2021/07/25/ssrf/image-20221026212427479.png" srcset="/img/loading.gif" lazyload></p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php">xxxxxxxxxx <span class="hljs-meta">&lt;?php</span> <span class="hljs-keyword">if</span> (<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;url&#x27;</span>]))&#123;<span class="hljs-comment">//是否参入相应的参数$link = $_POST[&#x27;url’];$curlobj = curl_init();//初始化(类似于初始化开启一个资源)curl_setopt($curlobj, CURLOPT_POST, 0);//利用开启的资源来发送数据包,并表明用什么方式发送curl_setopt($curlobj,CURLOPT_URL,$link);curl_setopt($curlobj, CURLOPT_RETURNTRANSFER, 1);//以字符串的方式打印出来$result=curl_exec($curlobj);执行最后配置好的资源(也类似于socket(python))curl_close($curlobj);关闭资源$filename = &#x27;./&#x27;.rand().&#x27;.txt’;file_put_contents($filename, $result); echo $result;&#125;?&gt;</span><br></code></pre></td></tr></table></figure>
 
-<p><img src="/2022/10/26/ssrf/image-20221026212533866.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2021/07/25/ssrf/image-20221026212533866.png" srcset="/img/loading.gif" lazyload></p>
 <p>ssrf漏洞查找</p>
 <p>由原理可以看出，SSRF是由于服务端获取其他服务器的相关信息的功能中形成的，因此我们大可以列举几种在web 应用中常见的从服务端获取其他服务器信息的的功能。<br>而我们一般正常去访问页面,是不是页面上会有很多的图片,一般来说,这些图片是不是我浏览器去请求的</p>
 
@@ -328,6 +322,27 @@
             <hr/>
             <div>
               <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%96%E7%BD%91%E7%9F%A5%E8%AF%86/" class="category-chain-item">外网知识</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
   
   
     <div class="post-meta">
@@ -346,7 +361,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>ssrf</div>
-      <div>https://www.dongw.cf/2022/10/26/ssrf/</div>
+      <div>https://www.dongw.cf/2021/07/25/ssrf/</div>
     </div>
     <div class="license-meta">
       
@@ -358,7 +373,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年10月26日</div>
+          <div>2021年7月25日</div>
         </div>
       
       
@@ -402,7 +417,7 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/" title="ssrf配合redis未授授权">
+                      <a href="/2021/07/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/" title="ssrf配合redis未授授权">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">ssrf配合redis未授授权</span>
                         <span class="visible-mobile">上一篇</span>
@@ -412,7 +427,7 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/10/26/%E5%86%B0%E8%9D%8E%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E5%88%86%E6%9E%90/" title="冰蝎命令执行分析">
+                      <a href="/2021/07/02/%E5%86%B0%E8%9D%8E%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E5%88%86%E6%9E%90/" title="冰蝎命令执行分析">
                         <span class="hidden-mobile">冰蝎命令执行分析</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>

